@@ -3,19 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tool kéo dài chữ</title>
+<title>Tool Change Text</title>
 
 <style>
 * { box-sizing: border-box; }
 
 body {
     margin: 0;
-    font-family: Arial;
+    font-family: Arial, sans-serif;
     background: linear-gradient(135deg, #74ebd5, #acb6e5);
     padding: 20px;
 }
 
-h2 { text-align: center; }
+h2 {
+    text-align: center;
+}
 
 .container {
     max-width: 600px;
@@ -30,12 +32,17 @@ h2 { text-align: center; }
     box-shadow: 0 6px 18px rgba(0,0,0,0.1);
 }
 
-textarea {
+input, textarea {
     width: 100%;
-    height: 90px;
-    padding: 12px;
-    border-radius: 12px;
+    padding: 10px;
+    margin-top: 8px;
+    border-radius: 10px;
     border: 1px solid #ddd;
+    font-size: 14px;
+}
+
+textarea {
+    height: 90px;
     resize: none;
 }
 
@@ -55,25 +62,50 @@ button {
     cursor: pointer;
 }
 
+button:hover {
+    opacity: 0.9;
+}
+
 .copy {
     background: #00b894;
 }
 
 .output {
-    margin-top: 12px;
+    margin-top: 10px;
     font-weight: bold;
+    word-break: break-word;
 }
 </style>
 </head>
 
 <body>
 
-<h2>✨ Tool kéo dài chữ xịn xò</h2>
+<h2>✨ Tool Change Text</h2>
 
 <div class="container">
 
+<!-- RANDOM NUMBER -->
 <div class="box">
-<textarea id="input1"></textarea>
+<h3>🎲 Random số</h3>
+
+<input type="number" id="count" placeholder="Số lượng số (vd: 9)">
+
+<div class="row">
+<input type="text" id="start" placeholder="Số bắt đầu (vd: 1)">
+<input type="text" id="end" placeholder="Số kết thúc (vd: 0330)">
+</div>
+
+<div class="btn-group">
+<button onclick="randomNumber()">Random</button>
+<button class="copy" onclick="copyRandom()">Copy</button>
+</div>
+
+<div id="randomOutput" class="output"></div>
+</div>
+
+<!-- TEXT TOOL -->
+<div class="box">
+<textarea id="input1" placeholder="Nhập văn bản..."></textarea>
 <div class="btn-group">
 <button onclick="convertText(1)">Chuyển đổi</button>
 <button class="copy" onclick="copyText(1)">Copy</button>
@@ -82,7 +114,7 @@ button {
 </div>
 
 <div class="box">
-<textarea id="input2"></textarea>
+<textarea id="input2" placeholder="Nhập văn bản..."></textarea>
 <div class="btn-group">
 <button onclick="convertText(2)">Chuyển đổi</button>
 <button class="copy" onclick="copyText(2)">Copy</button>
@@ -91,7 +123,7 @@ button {
 </div>
 
 <div class="box">
-<textarea id="input3"></textarea>
+<textarea id="input3" placeholder="Nhập văn bản..."></textarea>
 <div class="btn-group">
 <button onclick="convertText(3)">Chuyển đổi</button>
 <button class="copy" onclick="copyText(3)">Copy</button>
@@ -106,6 +138,36 @@ function randomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+// RANDOM NUMBER
+function randomNumber() {
+    let length = parseInt(document.getElementById("count").value) || 9;
+    let start = document.getElementById("start").value || "1";
+    let end = document.getElementById("end").value || "";
+
+    // Tính độ dài phần giữa
+    let middleLength = length - start.length - end.length;
+    if (middleLength < 0) {
+        alert("Độ dài không hợp lệ!");
+        return;
+    }
+
+    let middle = "";
+    for (let i = 0; i < middleLength; i++) {
+        middle += randomInt(0, 9).toString();
+    }
+
+    let result = start + middle + end;
+    document.getElementById("randomOutput").innerText = result;
+}
+
+function copyRandom() {
+    let text = document.getElementById("randomOutput").innerText;
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    alert("Đã copy!");
+}
+
+// TEXT TOOL
 function randomSuffix() {
     const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
     let result = "";
@@ -139,12 +201,8 @@ function convertText(id) {
     let words = text.split(" ");
     let total = words.length;
 
-    let indexes = [];
     let used = [];
-
-    // 🔥 luôn có ít nhất 1 từ
     let first = randomInt(0, total - 1);
-    indexes.push(first);
     used.push(first);
 
     let probability = 0.5;
@@ -155,14 +213,11 @@ function convertText(id) {
             idx = randomInt(0, total - 1);
         } while (used.includes(idx));
 
-        indexes.push(idx);
         used.push(idx);
-
-        probability /= 2; // giảm dần: 50% → 25% → 12.5%...
+        probability /= 2;
     }
 
-    // apply kéo dài
-    indexes.forEach(i => {
+    used.forEach(i => {
         words[i] = stretchWord(words[i]);
     });
 
@@ -173,7 +228,6 @@ function convertText(id) {
 function copyText(id) {
     let text = document.getElementById("output" + id).innerText;
     if (!text) return;
-
     navigator.clipboard.writeText(text);
     alert("Đã copy!");
 }
