@@ -15,9 +15,7 @@ body {
     padding: 20px;
 }
 
-h2 {
-    text-align: center;
-}
+h2 { text-align: center; }
 
 .container {
     max-width: 600px;
@@ -62,18 +60,30 @@ button {
     cursor: pointer;
 }
 
-button:hover {
-    opacity: 0.9;
-}
+button:hover { opacity: 0.9; }
 
-.copy {
-    background: #00b894;
-}
+.copy { background: #00b894; }
 
 .output {
     margin-top: 10px;
     font-weight: bold;
     word-break: break-word;
+}
+
+/* 🔥 TOAST */
+#toast {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 25px;
+    font-size: 14px;
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
 }
 </style>
 </head>
@@ -103,7 +113,7 @@ button:hover {
 <div id="randomOutput" class="output"></div>
 </div>
 
-<!-- TEXT TOOL -->
+<!-- TEXT TOOL 1 -->
 <div class="box">
 <textarea id="input1" placeholder="Nhập văn bản..."></textarea>
 <div class="btn-group">
@@ -113,6 +123,7 @@ button:hover {
 <div id="output1" class="output"></div>
 </div>
 
+<!-- TEXT TOOL 2 -->
 <div class="box">
 <textarea id="input2" placeholder="Nhập văn bản..."></textarea>
 <div class="btn-group">
@@ -122,6 +133,7 @@ button:hover {
 <div id="output2" class="output"></div>
 </div>
 
+<!-- TEXT TOOL 3 -->
 <div class="box">
 <textarea id="input3" placeholder="Nhập văn bản..."></textarea>
 <div class="btn-group">
@@ -133,7 +145,20 @@ button:hover {
 
 </div>
 
+<!-- 🔥 TOAST -->
+<div id="toast">Đã copy!</div>
+
 <script>
+function showToast(msg = "Đã copy!") {
+    let toast = document.getElementById("toast");
+    toast.innerText = msg;
+    toast.style.opacity = 1;
+
+    setTimeout(() => {
+        toast.style.opacity = 0;
+    }, 2000);
+}
+
 function randomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -144,10 +169,9 @@ function randomNumber() {
     let start = document.getElementById("start").value || "1";
     let end = document.getElementById("end").value || "";
 
-    // Tính độ dài phần giữa
     let middleLength = length - start.length - end.length;
     if (middleLength < 0) {
-        alert("Độ dài không hợp lệ!");
+        showToast("Độ dài không hợp lệ!");
         return;
     }
 
@@ -164,7 +188,7 @@ function copyRandom() {
     let text = document.getElementById("randomOutput").innerText;
     if (!text) return;
     navigator.clipboard.writeText(text);
-    alert("Đã copy!");
+    showToast();
 }
 
 // TEXT TOOL
@@ -229,7 +253,7 @@ function copyText(id) {
     let text = document.getElementById("output" + id).innerText;
     if (!text) return;
     navigator.clipboard.writeText(text);
-    alert("Đã copy!");
+    showToast();
 }
 </script>
 
